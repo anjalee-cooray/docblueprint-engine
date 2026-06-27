@@ -1,0 +1,20 @@
+{
+  "_fill": "YOU fill this. Non-negotiable rules the system must always enforce — not features, but invariants. Include why the rule exists.",
+  "businessRules": [
+    {
+      "id": "BR001",
+      "category": "e.g. Booking | Payments | Access Control | Data Retention",
+      "rule": "State the rule clearly and unambiguously.",
+      "rationale": "Why does this rule exist? What bad outcome does it prevent?",
+      "enforcement": "How is this rule enforced technically? (e.g. DB constraint, service-layer validation, policy check)",
+      "exceptions": ["Any legitimate exceptions to this rule — or omit this field if none"]
+    },
+    {
+      "id": "BR002",
+      "category": "Category",
+      "rule": "Second business rule.",
+      "rationale": "Why it exists.",
+      "enforcement": "How it is enforced."
+    }
+  ]
+}

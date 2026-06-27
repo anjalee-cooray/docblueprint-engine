@@ -1,0 +1,10 @@
+{
+  "_ai": "AI fills this. Derived from: personas.json + functional-requirements.json + non-functional-requirements.json + business-rules.json. Do not edit manually.",
+  "security": {
+    "authentication": {},
+    "authorisation": {},
+    "tenantIsolation": {},
+    "dataProtection": {},
+    "secretsManagement": {}
+  }
+}

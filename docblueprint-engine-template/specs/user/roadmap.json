@@ -1,0 +1,34 @@
+{
+  "_fill": "YOU fill this. What will you ship and when? Break your roadmap into phases with clear goals and feature lists.",
+  "roadmap": [
+    {
+      "phase": "MVP",
+      "status": "Design | Development | Complete",
+      "goal": "One sentence: what does this phase prove or deliver?",
+      "features": [
+        "Feature or capability included in this phase",
+        "Add more features"
+      ],
+      "excludes": [
+        "What is explicitly deferred from this phase"
+      ]
+    },
+    {
+      "phase": "v1.0",
+      "status": "Planned",
+      "goal": "What does v1.0 deliver beyond MVP?",
+      "features": [
+        "Feature 1",
+        "Feature 2"
+      ]
+    },
+    {
+      "phase": "v1.5",
+      "status": "Planned",
+      "goal": "Future enhancements.",
+      "features": [
+        "Feature 1"
+      ]
+    }
+  ]
+}

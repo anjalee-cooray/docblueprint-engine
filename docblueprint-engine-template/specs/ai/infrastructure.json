@@ -1,0 +1,9 @@
+{
+  "_ai": "AI fills this. Derived from: architecture.json + non-functional-requirements.json + product.json (pricing tiers). Do not edit manually.",
+  "infrastructure": {
+    "cloud": "",
+    "backend": {},
+    "frontend": {},
+    "services": {}
+  }
+}

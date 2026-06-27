@@ -1,8 +1,21 @@
 # docblueprint-engine — project template
 
-Generate a complete suite of project documents from a single JSON file using Claude Code.
+Generate a complete suite of project documents from structured spec files using Claude Code.
 
 No CLI. No API key. No install step.
+
+---
+
+## How it works
+
+Specs are split into two categories:
+
+| Category | Folder | Who fills it |
+|---|---|---|
+| **User specs** | `specs/user/` | You — product knowledge only you have |
+| **AI specs** | `specs/ai/` | Claude Code — derived from your user specs |
+
+Once both categories are complete and reviewed, Claude Code generates all documents in `project-docs/`.
 
 ---
 
@@ -29,42 +42,23 @@ git clone https://github.com/your-org/docblueprint-engine-template my-project
 cd my-project
 ```
 
-### Step 4 — Fill in `.docblueprint.json`
+### Step 4 — Fill in the user specs
 
-Open `.docblueprint.json`. It contains example values with comments explaining each field. Replace every value with your project's real details.
+Open every file in `specs/user/` and replace the placeholder values with your project's real details:
 
-```json
-{
-  "project": {
-    "name": "My Project",
-    "description": "What this product does and who it is for."
-  },
-  "domain": "healthtech",
-  "businessModel": ["B2B", "SaaS"],
-  "personas": [
-    { "id": "P1", "name": "Admin", "role": "Administrator", "description": "..." },
-    { "id": "P2", "name": "End User", "role": "Customer", "description": "..." }
-  ],
-  "flows": [
-    { "id": "F1", "name": "User Signup", "persona": "P2", "priority": "critical", "description": "..." }
-  ],
-  "stack": {
-    "backend": "Node.js",
-    "frontend": "React",
-    "database": "PostgreSQL",
-    "cloud": "AWS"
-  },
-  "compliance": ["HIPAA"],
-  "releaseModel": "continuous",
-  "featureFlags": true,
-  "versioning": true
-}
-```
+| File | What to fill in |
+|---|---|
+| `metadata.json` | Project name, owner, version, repo URL, authors |
+| `product.json` | Vision, problem statement, target market, pricing tiers, out of scope |
+| `personas.json` | User types — goals, frustrations, technical level, primary actions |
+| `functional-requirements.json` | What the product must do, with clear acceptance criteria |
+| `business-rules.json` | Non-negotiable rules the system must always enforce |
+| `user-journeys.json` | Critical user flows described from the user's perspective |
+| `glossary.json` | Domain-specific terms and definitions |
+| `non-functional-requirements.json` | Performance, availability, and consistency targets |
+| `roadmap.json` | Phases, features per phase, what is deferred |
 
-**Tips:**
-- Add as many personas and flows as your project needs — documents expand automatically per item
-- Leave stack fields empty (`""`) for technologies you're not using
-- Use `"none"` for compliance if there are no requirements
+**Do not touch `specs/ai/`** — Claude Code fills those automatically.
 
 ### Step 5 — Open the project folder in Claude Code
 
@@ -72,30 +66,43 @@ Open `.docblueprint.json`. It contains example values with comments explaining e
 claude .
 ```
 
-Claude Code automatically reads `CLAUDE.md` when it opens the folder. No extra command is needed.
+Claude Code reads `CLAUDE.md` automatically when the folder opens. No extra command needed.
 
-### Step 6 — Let Claude Code generate the documents
+### Step 6 — Claude Code fills the AI specs
 
-Claude Code will:
+Claude Code reads your `specs/user/` files and derives the technical specs in `specs/ai/`:
 
-1. Read `.docblueprint.json` — your project brief
-2. Read each placeholder template in `project-docs/`
-3. Generate full, tailored document content for your project
-4. Write the filled documents back into `project-docs/`
+| File | What Claude Code derives |
+|---|---|
+| `domain.json` | All domain entities, aggregates, lifecycles |
+| `bounded-contexts.json` | Service boundaries, events published and subscribed |
+| `events.json` | Every domain event — producer, consumers, payload fields |
+| `architecture.json` | Architecture style and patterns suited to your NFRs |
+| `infrastructure.json` | Full cloud and tech stack |
+| `security.json` | Auth mechanism, RBAC roles, tenant isolation strategy |
+| `observability.json` | SLIs, SLOs, metrics, alerts |
+| `operations.json` | DLQ strategy, replay, backups, incident runbooks |
 
-Documents are generated layer by layer in dependency order — governance first, then requirements, design, data, architecture, developer experience, and operations.
+### Step 7 — Review the AI specs
 
-When complete, Claude Code prints a summary table confirming every file written.
-
-### Step 7 — Review the output
-
-Open any file in `project-docs/` to read the generated content. If something needs adjusting, tell Claude Code directly in plain language:
+Claude Code prints a summary of everything it filled. Read through `specs/ai/`. If anything needs correcting, tell Claude Code in plain language:
 
 ```
-"The personas in R4a don't match our actual user types — update them and regenerate the downstream documents."
+"The architecture should use a modular monolith not microservices —
+update architecture.json and re-derive bounded-contexts.json."
 ```
 
-Claude Code will apply the correction and update any affected files.
+Claude Code applies the correction and updates any downstream files.
+
+### Step 8 — Confirm and generate docs
+
+When you are happy with both spec folders, tell Claude Code:
+
+```
+generate docs
+```
+
+Claude Code generates all documents in `project-docs/` layer by layer — using both `specs/user/` and `specs/ai/` as the source of truth. When complete it prints a confirmation table.
 
 ---
 
@@ -111,7 +118,7 @@ Claude Code will apply the correction and update any affected files.
 | 05 — Developer Experience | `05-developer-experience/` | DX1 Local Setup, DX2 Coding Standards, DX3 Git Workflow, DX4 PR Guide, DX5 System Walkthrough, DX6 Developer FAQ |
 | 06 — Operations | `06-operations/` | O1–O6 Operations docs + REL/FLAG/VER/HOT/COM flow docs |
 
-Per-persona documents (R4a) and per-flow documents (R6, D2, D3, D12) are generated as individual files using the IDs from your `.docblueprint.json`.
+Per-persona and per-journey documents are generated as individual files.
 
 ---
 
@@ -119,52 +126,38 @@ Per-persona documents (R4a) and per-flow documents (R6, D2, D3, D12) are generat
 
 ```
 my-project/
-├── .docblueprint.json              ← your project brief (fill this in)
-├── CLAUDE.md                       ← generation prompt (do not edit)
-└── project-docs/
+├── specs/
+│   ├── user/                   ← YOU fill these (9 files)
+│   │   ├── metadata.json
+│   │   ├── product.json
+│   │   ├── personas.json
+│   │   ├── functional-requirements.json
+│   │   ├── business-rules.json
+│   │   ├── user-journeys.json
+│   │   ├── glossary.json
+│   │   ├── non-functional-requirements.json
+│   │   └── roadmap.json
+│   └── ai/                     ← Claude Code fills these (9 files)
+│       ├── domain.json
+│       ├── bounded-contexts.json
+│       ├── events.json
+│       ├── architecture.json
+│       ├── infrastructure.json
+│       ├── security.json
+│       ├── observability.json
+│       ├── operations.json
+│       └── apis.json
+├── CLAUDE.md                   ← generation prompt (do not edit)
+└── project-docs/               ← generated documents land here
     ├── 00-governance/
     ├── 01-requirements/
-    │   ├── personas/               ← one file per persona after generation
-    │   └── journeys/               ← one file per flow after generation
     ├── 02-design/
-    │   ├── flow-specs/
-    │   ├── sequence-diagrams/
-    │   └── user-stories/
     ├── 03-data/
     ├── 04-architecture/
-    │   ├── adrs/
-    │   ├── infra-flows/
-    │   ├── cicd-flows/
-    │   ├── secrets-flows/
-    │   ├── resilience-flows/
-    │   └── observability-flows/
     ├── 05-developer-experience/
-    ├── 06-operations/
-    │   ├── release-flows/
-    │   ├── flag-flows/
-    │   ├── version-flows/
-    │   ├── hotfix-flows/
-    │   └── comms-flows/
-    └── fe-design/
-        ├── lofi/
-        ├── hifi/
-        └── component-specs/
+    └── 06-operations/
 ```
 
 ---
 
-## Why dependency order matters
-
-Each document is context for the next. Claude Code generates them in strict order so later documents are always consistent with earlier ones:
-
-- Glossary → BRD (shared vocabulary before requirements)
-- Personas → User Journeys (who before what)
-- Data Model → Sequence Diagrams (entities before interactions)
-- Sequence Diagrams → API Design (interactions before contracts)
-- All of the above → Architecture (decisions informed by requirements)
-- Architecture → Developer Experience (system understood before onboarding docs)
-- Everything → Operations (operations planned last, informed by everything)
-
----
-
-*Built with [docblueprint-engine](https://github.com/org/docblueprint-engine)*
+*Built with [docblueprint-engine](https://github.com/your-org/docblueprint-engine)*

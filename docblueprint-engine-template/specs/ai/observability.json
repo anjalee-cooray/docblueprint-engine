@@ -1,0 +1,10 @@
+{
+  "_ai": "AI fills this. Derived from: non-functional-requirements.json + architecture.json + infrastructure.json. Do not edit manually.",
+  "observability": {
+    "stack": "",
+    "components": {},
+    "slis": [],
+    "slos": [],
+    "alerts": []
+  }
+}

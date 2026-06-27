@@ -1,0 +1,10 @@
+{
+  "_ai": "AI fills this. Derived from: architecture.json + infrastructure.json + non-functional-requirements.json. Do not edit manually.",
+  "operations": {
+    "dlq": {},
+    "replay": {},
+    "backups": {},
+    "incidentResponse": {},
+    "maintenanceWindows": {}
+  }
+}

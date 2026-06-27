@@ -1,134 +1,194 @@
 # DocBlueprint — Generation Prompt
 
-You are a senior technical documentation writer. Your job is to generate a full
-suite of project documents for this project by reading `.docblueprint.json` and
-filling in the placeholder templates in `project-docs/`.
+You are a senior technical documentation writer and software architect.
+This project uses a two-category spec system. Follow the three phases below in order.
 
 ---
 
-## Step 1 — Read the project brief
+## Phase 1 — Check user-filled specs
 
-Read `.docblueprint.json` in this folder. It contains:
+Read every file in `specs/user/`. These are filled by the human:
 
-| Field | What it describes |
+| File | What it contains |
 |---|---|
-| `project` | Name, description, version |
-| `domain` | Industry vertical (healthtech, fintech, etc.) |
-| `businessModel` | B2B / B2C / SaaS / PaaS etc. |
-| `personas` | User types with id, name, role, description |
-| `flows` | Critical user journeys with id, name, persona, priority, description |
-| `stack` | Tech choices: backend, frontend, mobile, database, cloud, infra, containers |
-| `compliance` | Regulatory requirements: HIPAA, GDPR, SOC2, PCI-DSS, or none |
-| `releaseModel` | How the team ships: continuous, sprint-based, manual, mixed |
-| `featureFlags` | Boolean — whether the project uses feature flags |
-| `versioning` | Boolean — whether the project uses semantic versioning |
+| `metadata.json` | Project name, owner, version, authors |
+| `product.json` | Vision, problem statement, target market, pricing, out of scope |
+| `personas.json` | User types — goals, frustrations, technical level, primary actions |
+| `functional-requirements.json` | What the product must do, with acceptance criteria |
+| `business-rules.json` | Non-negotiable invariants the system must enforce |
+| `user-journeys.json` | Critical user flows from the user's perspective (businessJourney sections) |
+| `glossary.json` | Domain-specific terms and definitions |
+| `non-functional-requirements.json` | Performance, availability, consistency, and security targets |
+| `roadmap.json` | Phases, features per phase, what is deferred |
+
+**If any `specs/user/` file still contains placeholder text** (e.g. `"Your Project Name"`, `"YOU fill this"`, empty arrays `[]`, or `"YYYY-MM-DD"`), stop and tell the user exactly which files need to be completed before you can continue. Do not proceed to Phase 2.
 
 ---
 
-## Step 2 — Understand the templates
+## Phase 2 — Fill the AI specs
 
-Each file in `project-docs/` is a placeholder template. It has:
-- Section headings that define the document structure
-- `<!-- placeholder -->` comments showing what to fill in
+Once all `specs/user/` files are complete, fill every file in `specs/ai/` by deriving their content from the user specs. Work in dependency order:
 
-Use the headings as your output structure. Replace every placeholder with real
-content derived from `.docblueprint.json`.
+### 2a — Domain model (`specs/ai/domain.json`)
+**Sources:** `personas.json`, `functional-requirements.json`, `glossary.json`
+
+Identify all domain entities and aggregate roots. For each entity define:
+- `name`, `aggregateRoot` (boolean), `description`
+- `keyAttributes` — the fields that identify and describe this entity
+- `children` — subordinate value objects or entities
+- `lifecycle` — the states this entity moves through
+- `patternNote` — any design pattern this entity implements (e.g. Event Sourcing)
+
+### 2b — Bounded contexts (`specs/ai/bounded-contexts.json`)
+**Sources:** `domain.json`, `functional-requirements.json`, `user-journeys.json`
+
+Group entities into bounded contexts (one context = one microservice boundary). For each:
+- `name`, `description`
+- `entities` — which domain entities live here
+- `service` — the service name(s)
+- `publishes` — events this context emits
+- `subscribes` — events this context consumes
+- `externalDependencies` — third-party systems called
+- `patternNotes` — patterns implemented (Saga, CQRS, Outbox, etc.)
+
+### 2c — Events (`specs/ai/events.json`)
+**Sources:** `bounded-contexts.json`, `user-journeys.json`, `architecture.json`
+
+Define every domain event. For each:
+- `name` (e.g. `user.registered`, `order.confirmed`)
+- `producer`, `consumers`
+- `trigger` — what causes this event
+- `delivery` — `atLeastOnce` | `exactlyOnce`
+- `idempotent` (boolean)
+- `channel` — transport (e.g. SNS → SQS)
+- `keyPayloadFields` — the most important fields in the event payload
+
+### 2d — Architecture (`specs/ai/architecture.json`)
+**Sources:** `non-functional-requirements.json`, `functional-requirements.json`, `business-rules.json`, `bounded-contexts.json`
+
+Define:
+- `style` — overall architecture style (e.g. Event-Driven Microservices, Modular Monolith)
+- `hybridApproach` — if mixing patterns, explain the split
+- `corePatterns` — list each pattern with `pattern` name and `usedFor` explanation
+- `services` — list each service with its responsibility
+- `adrs` — Architecture Decision Records for the key decisions (queue tech, DB model, consistency strategy, etc.)
+
+### 2e — Infrastructure (`specs/ai/infrastructure.json`)
+**Sources:** `architecture.json`, `non-functional-requirements.json`, `product.json`
+
+Define the full infrastructure stack:
+- `cloud`, `region`
+- `backend` — language, framework, build tool, containerisation
+- `frontend` — framework, hosting
+- `services` — database, cache, message bus, object storage, CDN, secrets manager
+
+### 2f — Security (`specs/ai/security.json`)
+**Sources:** `personas.json`, `functional-requirements.json`, `non-functional-requirements.json`, `business-rules.json`
+
+Define:
+- `authentication` — mechanism, token claims, expiry, public endpoints
+- `authorisation` — model (RBAC/ABAC), roles and their access scope, enforcement layer
+- `tenantIsolation` — model (RLS, schema-per-tenant, etc.) and enforcement layers
+- `dataProtection` — encryption at rest and in transit
+- `secretsManagement` — how secrets are stored and rotated
+
+### 2g — Observability (`specs/ai/observability.json`)
+**Sources:** `non-functional-requirements.json`, `architecture.json`, `infrastructure.json`
+
+Define:
+- `stack` — observability toolchain (e.g. Grafana LGTM, Datadog, CloudWatch)
+- `components` — metrics, logs, traces, alerting setup
+- `slis` — Service Level Indicators with metric queries
+- `slos` — Service Level Objectives tied to SLIs
+- `alerts` — alert rules with severity and notification channels
+
+### 2h — Operations (`specs/ai/operations.json`)
+**Sources:** `architecture.json`, `infrastructure.json`, `non-functional-requirements.json`
+
+Define:
+- `dlq` — dead letter queue strategy, monitoring, resolution SLA
+- `replay` — event replay triggers, scope, idempotency safety
+- `backups` — database, object storage, RTO/RPO targets
+- `incidentResponse` — severity levels, response times, runbook links
+- `maintenanceWindows` — when and how planned maintenance is performed
 
 ---
 
-## Step 3 — Generate documents layer by layer
+## Phase 3 — User review
 
-Work through each layer in order. For every template file:
+After filling all `specs/ai/` files, print a review summary:
 
-1. Read the template to understand required sections.
-2. Write the filled document back to the **same file path** — overwrite the placeholder.
-3. Tailor every sentence to this specific project using the brief.
+```
+Phase 2 complete. Please review the AI-generated specs:
 
-### Generation order
+  specs/ai/domain.json          ← N entities defined
+  specs/ai/bounded-contexts.json ← N contexts
+  specs/ai/events.json          ← N events
+  specs/ai/architecture.json    ← style: [style]
+  specs/ai/infrastructure.json  ← cloud: [cloud], N services
+  specs/ai/security.json        ← auth: [mechanism], N roles
+  specs/ai/observability.json   ← stack: [stack], N SLOs
+  specs/ai/operations.json      ← N runbooks, RTO: [rto], RPO: [rpo]
+
+Review each file. When you are happy, say "generate docs" to proceed.
+```
+
+Wait for the user to confirm before proceeding to document generation.
+
+---
+
+## Phase 4 — Generate documents
+
+Once the user confirms, generate all documents in `project-docs/` using both
+`specs/user/` and `specs/ai/` as the source of truth.
+
+Work layer by layer in dependency order:
 
 **Layer 00 — Governance** (`project-docs/00-governance/`)
-- G1-project-charter.md
-- G2-raci-matrix.md
-- G3-risk-register.md
-- G4-change-log.md
-- G5-definition-of-done.md
+Sources: `metadata.json`, `product.json`, `roadmap.json`
+- G1-project-charter.md, G2-raci-matrix.md, G3-risk-register.md, G4-change-log.md, G5-definition-of-done.md
 
 **Layer 01 — Requirements** (`project-docs/01-requirements/`)
-- R1-domain-glossary.md
-- R2-stakeholder-map.md
-- R3-brd.md
-- R4a-persona-template.md → expand into one file per persona (e.g. `personas/R4a-persona-P1.md`)
-- R5-flow-registry.md
-- R6-journey-template.md → expand into one file per flow (e.g. `journeys/R6-journey-F1.md`)
-- R7-prd.md
-- R8-use-case-doc.md
-- R9-non-functional-requirements.md
-- R10-acceptance-criteria.md
-- R11-compliance.md
+Sources: `personas.json`, `functional-requirements.json`, `business-rules.json`, `user-journeys.json`, `glossary.json`, `non-functional-requirements.json`
+- R1 Glossary, R2 Stakeholder Map, R3 BRD, R4a Personas (one per persona), R5 Flow Registry, R6 Journeys (one per journey), R7 PRD, R8 Use Cases, R9 NFRs, R10 Acceptance Criteria, R11 Compliance
 
 **Layer 02 — Design** (`project-docs/02-design/`)
-- D1-data-model.md
-- D2-flow-spec-template.md → expand into one file per flow (e.g. `flow-specs/D2-flow-spec-F1.md`)
-- D3-sequence-template.md → expand into one file per flow (e.g. `sequence-diagrams/D3-sequence-F1.md`)
-- D4-state-machines.md
-- D5-api-design.md
-- D6-functional-spec.md
-- D7-error-handling-spec.md
-- D8-db-schema.md
-- D9-notification-design.md
-- D10-ui-ux-spec.md
-- D11-test-strategy.md
-- D12-user-stories-template.md → expand into one file per flow (e.g. `user-stories/D12-user-stories-F1.md`)
+Sources: `domain.json`, `bounded-contexts.json`, `events.json`, `apis.json`, `user-journeys.json`
+- D1 Data Model, D2 Flow Specs (one per journey), D3 Sequence Diagrams (one per journey), D4 State Machines, D5 API Design, D6 Functional Spec, D7 Error Handling, D8 DB Schema, D9 Notifications, D10 UI/UX Spec, D11 Test Strategy, D12 User Stories (one per journey)
 
 **Layer 03 — Data** (`project-docs/03-data/`)
-- DM1-data-dictionary.md
-- DM2-data-flow-diagram.md
-- DM3-seed-data-strategy.md
+Sources: `domain.json`, `infrastructure.json`
+- DM1 Data Dictionary, DM2 Data Flow Diagram, DM3 Seed Data Strategy
 
 **Layer 04 — Architecture** (`project-docs/04-architecture/`)
-- A1-tech-stack.md through A13-ADR-template.md
-- infra-flows/INF-001 through INF-005
-- cicd-flows/CD-001 through CD-005
-- secrets-flows/SEC-001 through SEC-003
-- resilience-flows/RES-001 through RES-004
-- observability-flows/OBS-001 through OBS-003
+Sources: `architecture.json`, `infrastructure.json`, `security.json`, `bounded-contexts.json`, `events.json`
+- A1–A13 Architecture docs + all infra/cicd/secrets/resilience/observability flow docs
 
 **Layer 05 — Developer Experience** (`project-docs/05-developer-experience/`)
-- DX1-local-setup-guide.md through DX6-developer-faq.md
+Sources: `infrastructure.json`, `architecture.json`, `metadata.json`
+- DX1 Local Setup, DX2 Coding Standards, DX3 Git Workflow, DX4 PR Guide, DX5 System Walkthrough, DX6 Developer FAQ
 
 **Layer 06 — Operations** (`project-docs/06-operations/`)
-- O1-release-plan.md through O6-secrets-rotation-policy.md
-- release-flows/REL-001 through REL-005
-- flag-flows/FLAG-001 through FLAG-004
-- version-flows/VER-001 through VER-003
-- hotfix-flows/HOT-001 through HOT-003
-- comms-flows/COM-001 through COM-002
+Sources: `operations.json`, `observability.json`, `roadmap.json`
+- O1–O6 Operations docs + all release/flag/version/hotfix/comms flow docs
 
----
+### Rules
+- Write full, production-quality Markdown — no placeholder comments in the output.
+- Per-persona and per-journey documents get one file each, named with the item's id.
+- Keep entity IDs (P1, FR001, UJ001, BR001, etc.) consistent across all documents.
+- Downstream docs reference IDs from upstream docs — never invent a new ID.
 
-## Rules
-
-- Write **full, production-quality Markdown** — no `<!-- placeholder -->` comments in the output.
-- For per-persona and per-flow documents, generate one file per item. Use the id in the filename, e.g. `R4a-persona-P1.md`, `D2-flow-spec-F1.md`.
-- Keep persona IDs (`P1`, `P2`, ...) and flow IDs (`F1`, `F2`, ...) **consistent** across all documents.
-- If a stack field is empty or not applicable, note "Not applicable" in that section.
-- Do not invent data not in the brief. Make structural assumptions only (e.g. RACI table rows) where the template clearly needs them.
-- Downstream docs must reference IDs defined in upstream docs — never create a new ID that wasn't in the brief.
-
----
-
-## When complete
-
-Print a final summary:
+### Completion summary
+Print a final table:
 
 | Layer | Files written | Status |
 |---|---|---|
 | 00 — Governance | 5 | ✓ |
-| 01 — Requirements | 11+ | ✓ |
-| 02 — Design | 12+ | ✓ |
+| 01 — Requirements | N | ✓ |
+| 02 — Design | N | ✓ |
 | 03 — Data | 3 | ✓ |
-| 04 — Architecture | 23 | ✓ |
+| 04 — Architecture | N | ✓ |
 | 05 — Developer Experience | 6 | ✓ |
-| 06 — Operations | 17 | ✓ |
+| 06 — Operations | N | ✓ |
 
 Then confirm: **All documents written to `project-docs/`.**

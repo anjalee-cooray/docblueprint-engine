@@ -1,0 +1,25 @@
+{
+  "_fill": "YOU fill this. Basic project identity — name, owner, status.",
+  "metadata": {
+    "name": "Your Project Name",
+    "version": "0.1.0",
+    "owner": "Your Company / Team Name",
+    "status": "Design | Development | Production",
+    "lastUpdated": "YYYY-MM-DD",
+    "specVersion": "v1",
+    "repository": "https://github.com/your-org/your-repo",
+    "authors": [
+      {
+        "name": "Author Name",
+        "role": "Product & Architecture"
+      }
+    ],
+    "changelog": [
+      {
+        "version": "0.1.0",
+        "date": "YYYY-MM-DD",
+        "summary": "Initial specification"
+      }
+    ]
+  }
+}

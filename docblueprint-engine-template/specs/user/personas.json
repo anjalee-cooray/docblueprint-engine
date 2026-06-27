@@ -1,0 +1,34 @@
+{
+  "_fill": "YOU fill this. Who are the different types of users? What do they need, what frustrates them, what actions do they take?",
+  "personas": [
+    {
+      "id": "P1",
+      "name": "Persona Name",
+      "role": "Job Title / Role",
+      "description": "A one-paragraph description of this persona — who they are and what they do on the platform.",
+      "goals": [
+        "What they are trying to achieve",
+        "Add more goals"
+      ],
+      "frustrations": [
+        "What currently frustrates them before using your product",
+        "Add more frustrations"
+      ],
+      "technicalLevel": "low | low-to-medium | medium | high",
+      "primaryActions": [
+        "Key action this persona takes in the product",
+        "Add more actions"
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "Second Persona",
+      "role": "Job Title / Role",
+      "description": "Description of this persona.",
+      "goals": ["Goal 1"],
+      "frustrations": ["Frustration 1"],
+      "technicalLevel": "low",
+      "primaryActions": ["Action 1"]
+    }
+  ]
+}

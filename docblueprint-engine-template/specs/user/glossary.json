@@ -1,0 +1,16 @@
+{
+  "_fill": "YOU fill this. Define every domain-specific term your team uses. A shared glossary prevents misunderstandings between product, engineering, and design.",
+  "glossary": [
+    {
+      "term": "Key domain term",
+      "definition": "What this term means in the context of your product — be precise.",
+      "examples": ["A concrete example", "Another example"],
+      "relatedTerms": ["Related term 1", "Related term 2"]
+    },
+    {
+      "term": "Second term",
+      "definition": "Definition.",
+      "relatedTerms": ["Related term"]
+    }
+  ]
+}

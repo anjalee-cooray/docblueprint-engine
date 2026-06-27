@@ -1,0 +1,36 @@
+{
+  "_fill": "YOU fill this. Your product vision, who it is for, how it makes money, and what is out of scope for v1.",
+  "product": {
+    "vision": "One sentence: what world does this product create for its users?",
+    "problemStatement": "What pain does this product solve and for whom? Why do existing solutions fall short?",
+    "targetMarket": [
+      "Industry or segment 1",
+      "Industry or segment 2"
+    ],
+    "businessModel": [
+      "e.g. B2B | B2C | B2B2C | SaaS | PaaS"
+    ],
+    "pricing": [
+      {
+        "tier": "Starter",
+        "target": "Who is this tier for?",
+        "limits": {
+          "exampleLimit": "value"
+        },
+        "infrastructure": "shared | dedicated"
+      },
+      {
+        "tier": "Pro",
+        "target": "Who is this tier for?",
+        "limits": {
+          "exampleLimit": "value"
+        },
+        "infrastructure": "shared | dedicated"
+      }
+    ],
+    "outOfScopeV1": [
+      "Feature or capability intentionally excluded from version 1",
+      "Add more as needed"
+    ]
+  }
+}

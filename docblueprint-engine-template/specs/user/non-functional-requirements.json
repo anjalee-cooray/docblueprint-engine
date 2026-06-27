@@ -1,0 +1,25 @@
+{
+  "_fill": "YOU fill this. Define your quality targets — performance, availability, consistency, scalability. These drive architecture decisions.",
+  "nonFunctionalRequirements": [
+    {
+      "id": "NFR001",
+      "category": "Availability | Performance | Consistency | Security | Scalability | Compliance",
+      "requirement": "State the requirement as a measurable target.",
+      "measurement": "How will you measure this in production? (e.g. p95 latency via Prometheus histogram)",
+      "relatedSLO": "SLO001"
+    },
+    {
+      "id": "NFR002",
+      "category": "Performance",
+      "requirement": "The core user action must complete in under X seconds at p95.",
+      "measurement": "Histogram metric on the critical path service.",
+      "relatedSLO": "SLO002"
+    },
+    {
+      "id": "NFR003",
+      "category": "Consistency",
+      "requirement": "Describe your consistency requirement — e.g. no duplicate processing, no data loss between write and consume.",
+      "enforcement": "How will this be enforced technically?"
+    }
+  ]
+}

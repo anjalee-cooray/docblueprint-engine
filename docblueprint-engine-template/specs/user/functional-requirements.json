@@ -1,0 +1,28 @@
+{
+  "_fill": "YOU fill this. What must the product do? Each requirement gets an ID, a title, a description, and clear acceptance criteria.",
+  "functionalRequirements": [
+    {
+      "id": "FR001",
+      "area": "Feature Area (e.g. User Management, Payments, Notifications)",
+      "title": "Short title of the requirement",
+      "description": "What the system must allow a user to do.",
+      "acceptanceCriteria": [
+        "Given [context], when [action], then [outcome]",
+        "Add one criterion per observable behaviour"
+      ],
+      "relatedBusinessRules": ["BR001"],
+      "relatedPersonas": ["P1"]
+    },
+    {
+      "id": "FR002",
+      "area": "Feature Area",
+      "title": "Second requirement",
+      "description": "Description.",
+      "acceptanceCriteria": [
+        "Criterion 1"
+      ],
+      "relatedBusinessRules": [],
+      "relatedPersonas": ["P2"]
+    }
+  ]
+}

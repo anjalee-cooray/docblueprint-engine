@@ -1,0 +1,9 @@
+{
+  "_ai": "AI fills this. Derived from: non-functional-requirements.json + functional-requirements.json + business-rules.json. Do not edit manually.",
+  "architecture": {
+    "style": "",
+    "corePatterns": [],
+    "services": [],
+    "adrs": []
+  }
+}

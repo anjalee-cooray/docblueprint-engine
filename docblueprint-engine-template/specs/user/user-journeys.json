@@ -1,0 +1,47 @@
+{
+  "_fill": "YOU fill the businessJourney section of each journey. Describe the steps from the user's perspective — not the technical implementation. AI will fill the implementation section.",
+  "userJourneys": [
+    {
+      "id": "UJ001",
+      "name": "Journey Name (e.g. User Signup, Checkout, Password Reset)",
+      "persona": "P1",
+      "priority": "critical | high | medium | low",
+      "relatedRequirements": ["FR001"],
+      "businessJourney": {
+        "goal": "What the user is trying to accomplish.",
+        "steps": [
+          "Step 1 — what the user does",
+          "Step 2 — what happens next",
+          "Step 3 — how it ends"
+        ],
+        "successOutcome": "How the user knows they succeeded."
+      },
+      "implementation": {
+        "_note": "AI fills this section based on your architecture and functional requirements.",
+        "architecture": "",
+        "services": [],
+        "patterns": [],
+        "consistency": ""
+      }
+    },
+    {
+      "id": "UJ002",
+      "name": "Second Journey",
+      "persona": "P2",
+      "priority": "high",
+      "relatedRequirements": ["FR002"],
+      "businessJourney": {
+        "goal": "Goal.",
+        "steps": ["Step 1", "Step 2"],
+        "successOutcome": "Success outcome."
+      },
+      "implementation": {
+        "_note": "AI fills this section.",
+        "architecture": "",
+        "services": [],
+        "patterns": [],
+        "consistency": ""
+      }
+    }
+  ]
+}
